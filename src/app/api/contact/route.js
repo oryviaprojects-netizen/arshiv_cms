@@ -5,14 +5,6 @@ import { ApiResponse } from "@/utils/ApiResponse";
 import { ApiError } from "@/utils/ApiError";
 import { sendEmail } from "@/utils/sendEmail";
 
-/* ---------------------------
-   🌍 CORS HEADERS
----------------------------- */
-const corsHeaders = {
-  "Access-Control-Allow-Origin": process.env.NEXT_PUBLIC_BASE_URL,
-  "Access-Control-Allow-Methods": "GET, POST, PATCH, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization",
-};
 
 /* ---------------------------
    OPTIONS (Preflight)
@@ -65,7 +57,6 @@ export async function POST(req) {
       ),
       {
         status: 201,
-        headers: corsHeaders,
       }
     );
   } catch (error) {
@@ -73,7 +64,6 @@ export async function POST(req) {
       JSON.stringify(new ApiError(500, error.message)),
       {
         status: 500,
-        headers: corsHeaders,
       }
     );
   }

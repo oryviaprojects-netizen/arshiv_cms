@@ -4,11 +4,6 @@ import Contact from "@/models/contact.model";
 import { ApiResponse } from "@/utils/ApiResponse";
 import { ApiError } from "@/utils/ApiError";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": process.env.NEXT_PUBLIC_BASE_URL,
-  "Access-Control-Allow-Methods": "PATCH, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization",
-};
 
 export function OPTIONS() {
   return NextResponse.json({}, { status: 200, headers: corsHeaders });
@@ -66,7 +61,6 @@ export async function PATCH(req, { params }) {
   } catch (error) {
     return NextResponse.json(new ApiError(500, error.message), {
       status: 500,
-      headers: corsHeaders,
     });
   }
 }

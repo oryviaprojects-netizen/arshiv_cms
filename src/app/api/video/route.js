@@ -6,11 +6,6 @@ import Video from "@/models/video.model";
 import { validateBody } from "@/utils/validateRequest";
 import { videoCreateSchema } from "@/validators/video.validator";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "http://localhost:3001",
-  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization",
-};
 
 export async function OPTIONS() {
   return NextResponse.json({}, { status: 200, headers: corsHeaders });
@@ -95,13 +90,13 @@ export async function GET(req) {
         platformFilter: platform || null,
         categoryFilter: category || null,
       }, "Videos fetched successfully"),
-      { status: 200, headers: corsHeaders }
+      { status: 200}
     );
   } catch (error) {
     console.error("GET /api/video error:", error);
     return NextResponse.json(
       new ApiError(500, error.message),
-      { status: 500, headers: corsHeaders }
+      { status: 500 }
     );
   }
 }

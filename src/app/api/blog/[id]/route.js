@@ -10,11 +10,6 @@ import { validateBody } from "@/utils/validateRequest";
 import { headers } from "next/headers";
 
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": process.env.NEXT_PUBLIC_BASE_URL,
-  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization",
-};
 
 /* ✅ GET /api/blog/[id]
    Fetch a single blog by ID
@@ -52,7 +47,7 @@ export async function GET(req, context) {
     console.error("GET /api/blog/[id] error:", error);
     return NextResponse.json(new ApiError(500, error.message), {
       status: 500,
-      headers: corsHeaders,
+     
     });
   }
 }
