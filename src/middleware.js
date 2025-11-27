@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 
 export function middleware(request) {
-  const origin = request.headers.get("origin") || "";
+  const origin = request.headers.get("origin");
 
   const allowedOrigins = [
-    process.env.FRONTEND_URL,      // production frontend
+    process.env.FRONTEND_URL,      // production
     "http://localhost:3000",       // local frontend
   ];
 
@@ -14,18 +14,11 @@ export function middleware(request) {
     response.headers.set("Access-Control-Allow-Origin", origin);
   }
 
-  response.headers.set(
-    "Access-Control-Allow-Methods",
-    "GET, POST, PUT, PATCH, DELETE, OPTIONS"
-  );
-
-  response.headers.set(
-    "Access-Control-Allow-Headers",
-    "Content-Type, Authorization"
-  );
+  response.headers.set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
+  response.headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
   if (request.method === "OPTIONS") {
-    return new NextResponse(null, { status: 204, headers: response.headers });
+    return new NextResponse(null, { status: 200, headers: response.headers });
   }
 
   return response;
