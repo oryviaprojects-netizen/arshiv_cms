@@ -4,66 +4,55 @@ const BlogSchema = new mongoose.Schema(
   {
     title: {
       type: String,
-      required: [true, "Blog title is required"],
+      required: true,
       trim: true,
     },
-    content: {
+
+    searchTitle: {
       type: String,
-      required: [true, "Content is required"],
+      index: true, // FAST prefix search index!
     },
-    thumbnail: {
-      type: String,
-      default: "",
-    },
-    description: { 
-      type: String, 
-      default: "" 
-    },
-    category: {
-      type: String,
-      default: "General",
-      trim: true,
-    },
-    thumbnailPublicId: {
-      type: String,
-    },
-    tags: {
-      type: [String],
-      default: [],
-      index: true,
-    },
-    isPublished: {
-      type: Boolean,
-      default: true,
-      index: true,
-    },
+
+    content: { type: String, required: true },
+    thumbnail: { type: String, default: "" },
+    description: { type: String, default: "" },
+    category: { type: String, default: "General", trim: true },
+    thumbnailPublicId: { type: String },
+    tags: { type: [String], default: [], index: true },
+    isPublished: { type: Boolean, default: true, index: true },
   },
   { timestamps: true }
 );
 
-// ✅ CORRECTED: Full-text index including content
+// Auto-create lower-case search field
+BlogSchema.pre("save", function (next) {
+  if (this.title) {
+    this.searchTitle = this.title.toLowerCase();
+  }
+  next();
+});
+
+
+// FULL-TEXT INDEX ONLY FOR REAL SEARCH PAGE
 BlogSchema.index(
-  { 
-    title: "text", 
-    description: "text", 
-    content: "text",      // ← THIS WAS MISSING!
-    tags: "text" ,
-    category:"text"
+  {
+    title: "text",
+    description: "text",
+    content: "text",
+    tags: "text",
+    category: "text",
   },
-  { 
-    weights: { 
-      title: 5,           // Highest priority
-      tags: 3,            // High priority
-      description: 4,     // Medium priority
-      content: 1 ,
-      category  :2       // Lower priority
-    } 
+  {
+    weights: {
+      title: 5,
+      description: 3,
+      tags: 3,
+      category: 2,
+      content: 1,
+    },
   }
 );
 
-// Add these to your BlogSchema if you have many documents
-BlogSchema.index({ title: 1 });
-BlogSchema.index({ category: 1 });
-BlogSchema.index({ description: 1 });
+
 
 export default mongoose.models.Blog || mongoose.model("Blog", BlogSchema);

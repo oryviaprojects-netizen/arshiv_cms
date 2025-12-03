@@ -17,7 +17,7 @@ export async function GET() {
 
     return NextResponse.json(
       new ApiResponse(200, contacts, "Contacts fetched successfully"),
-      { status: 200, headers: corsHeaders }
+      { status: 200}
     );
   } catch (error) {
     return NextResponse.json(new ApiError(500, error.message), {

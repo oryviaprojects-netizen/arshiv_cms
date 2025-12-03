@@ -6,9 +6,8 @@ import { ApiError } from "@/utils/ApiError";
 
 
 export function OPTIONS() {
-  return NextResponse.json({}, { status: 200, headers: corsHeaders });
+  return NextResponse.json({}, { status: 200,  });
 }
-
 
 export async function GET(req, context) {
   try {
@@ -56,7 +55,7 @@ export async function PATCH(req, { params }) {
 
     return NextResponse.json(
       new ApiResponse(200, updated, "Status updated successfully"),
-      { status: 200, headers: corsHeaders }
+      { status: 200 }
     );
   } catch (error) {
     return NextResponse.json(new ApiError(500, error.message), {
@@ -78,13 +77,13 @@ export async function DELETE(req, { params }) {
 
     return NextResponse.json(
       new ApiResponse(200, deleted, "Contact deleted successfully"),
-      { status: 200, headers: corsHeaders }
+      { status: 200}
     );
 
   } catch (error) {
     return NextResponse.json(
       new ApiError(500, error.message),
-      { status: 500, headers: corsHeaders }
+      { status: 500 }
     );
   }
 }
