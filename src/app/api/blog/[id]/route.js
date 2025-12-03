@@ -12,10 +12,9 @@ import { validateBody } from "@/utils/validateRequest";
 export async function GET(req, context) {
   try {
     await connectToDB();
-    
-    // ✅ CORRECT WAY: Await params first, then destructure
-    const params = await context.params;
-    const { id } = params;
+
+    // ❌ FIXED: no await
+    const { id } = context.params;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return NextResponse.json(new ApiError(400, "Invalid blog ID"), { status: 400 });
@@ -29,7 +28,9 @@ export async function GET(req, context) {
       return NextResponse.json(new ApiError(404, "Blog not found"), { status: 404 });
     }
 
-    return NextResponse.json(new ApiResponse(200, blog, "Blog fetched"), { status: 200 });
+    return NextResponse.json(new ApiResponse(200, blog, "Blog fetched"), {
+      status: 200,
+    });
 
   } catch (error) {
     console.error("GET ERROR:", error);
@@ -41,10 +42,9 @@ export async function GET(req, context) {
 export async function PUT(req, context) {
   try {
     await connectToDB();
-    
-    // ✅ CORRECT WAY: Await params first, then destructure
-    const params = await context.params;
-    const { id } = params;
+
+    // ❌ FIXED
+    const { id } = context.params;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return NextResponse.json(new ApiError(400, "Invalid blog ID"), { status: 400 });
@@ -63,7 +63,7 @@ export async function PUT(req, context) {
       "tags",
       "description",
       "isPublished",
-      "duration"
+      "duration",
     ];
 
     const updates = Object.fromEntries(
@@ -75,7 +75,6 @@ export async function PUT(req, context) {
       return NextResponse.json(new ApiError(404, "Blog not found"), { status: 404 });
     }
 
-    // cloudinary cleanup
     if (
       updates.thumbnail &&
       blog.thumbnailPublicId &&
@@ -84,15 +83,15 @@ export async function PUT(req, context) {
       cloudinary.uploader.destroy(blog.thumbnailPublicId).catch(console.error);
     }
 
-    const updatedBlog = await Blog.findByIdAndUpdate(
-      id,
-      { $set: updates },
-      { new: true, lean: true, runValidators: true }
-    );
+    const updatedBlog = await Blog.findByIdAndUpdate(id, updates, {
+      new: true,
+      runValidators: true,
+    }).lean();
 
-    return NextResponse.json(new ApiResponse(200, updatedBlog, "Blog updated"), {
-      status: 200
-    });
+    return NextResponse.json(
+      new ApiResponse(200, updatedBlog, "Blog updated"),
+      { status: 200 }
+    );
 
   } catch (error) {
     console.error("PUT ERROR:", error);
@@ -104,16 +103,16 @@ export async function PUT(req, context) {
 export async function DELETE(req, context) {
   try {
     await connectToDB();
-    
-    // ✅ CORRECT WAY: Await params first, then destructure
-    const params = await context.params;
-    const { id } = params;
+
+    // ❌ FIXED
+    const { id } = context.params;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return NextResponse.json(new ApiError(400, "Invalid blog ID"), { status: 400 });
     }
 
-    const deleted = await Blog.findByIdAndDelete(id).lean();
+    // ❌ FIXED: removed lean()
+    const deleted = await Blog.findByIdAndDelete(id);
     if (!deleted) {
       return NextResponse.json(new ApiError(404, "Blog not found"), { status: 404 });
     }
@@ -122,9 +121,10 @@ export async function DELETE(req, context) {
       cloudinary.uploader.destroy(deleted.thumbnailPublicId).catch(console.error);
     }
 
-    return NextResponse.json(new ApiResponse(200, deleted, "Blog deleted"), {
-      status: 200
-    });
+    return NextResponse.json(
+      new ApiResponse(200, deleted, "Blog deleted successfully"),
+      { status: 200 }
+    );
 
   } catch (error) {
     console.error("DELETE ERROR:", error);
